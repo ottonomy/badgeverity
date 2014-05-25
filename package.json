@@ -5,6 +5,7 @@
   "dependencies": {
     "jayschema": "*",
     "mongodb": "*",
-    "monk": "*"
+    "monk": "*",
+    "openbadges-bakery": "*"
   }
 }
