@@ -1,4 +1,29 @@
 #!/usr/bin/env node
+const verity = require('../')
 
-console.log('hello world');
-console.log(process.argv);
+console.log('======= Welcome to Badge Verity =======');
+console.log('Opening with arguments: ' + process.argv.slice(2));
+console.log('=======================================\n\n');
+
+var identifier = process.argv[2];
+console.log('Getting schema for ' + identifier + '...\n')
+
+verity.getSchema(identifier,function(err, data){
+	if (err)
+		console.log(err);
+	else {
+		console.log(
+			"The Requested schema for " + identifier + ':\n' + 
+			JSON.stringify(data)
+			);
+	}
+});
+
+
+
+
+
+process.on('SIGINT', function () {
+  log('interrupt');
+  process.exit(2);
+});
