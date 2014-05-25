@@ -1,0 +1,16 @@
+{
+  "name": "Sample Extended Badge",
+  "description": "For doing awesome things in fairly standard ways.",
+  "image": "https://example.org/extended-badge-longcat.png",
+  "criteria": "https://example.org/extended-badge.html",
+  "tags": ["badgeClassExtensions"],
+  "issuer": "https://example.org/organization.json",
+  "badgeAgeTarget": {
+  	"age": "5-18",
+  	"grade": "K-12"
+  },
+  "version": {
+    "obi-badgeclass":"https://openbadges.org/standard/1.1/badgeclass.json",
+    "badgeAgeTarget":"https://badgeguru.net/extensions/schema-age-target-v0.5.json"
+  } 
+}
