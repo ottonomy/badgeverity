@@ -6,6 +6,13 @@
     "jayschema": "*",
     "mongodb": "*",
     "monk": "*",
-    "openbadges-bakery": "*"
+    "openbadges-bakery": "*",
+    "mongoose": "*"
+  },
+  "devDependencies": {
+  	"tap":"*"
+  },
+  "scripts": {
+  	"test": "tap test/*.test.js"
   }
 }

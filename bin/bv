@@ -2,22 +2,52 @@
 const verity = require('../')
 
 console.log('======= Welcome to Badge Verity =======');
+console.log('current working dir: ' + process.cwd());
 console.log('Opening with arguments: ' + process.argv.slice(2));
 console.log('=======================================\n\n');
 
-var identifier = process.argv[2];
-console.log('Getting schema for ' + identifier + '...\n')
+//parse arguments
+var options = validateArgs();
 
-verity.getSchema(identifier,function(err, data){
+// //get data piped in
+// process.stdin.resume();
+// process.stdin.setEncoding('utf8');
+// process.stdin.on("data",function(data){
+// 	options['data'] = data;
+
+// });
+
+
+// function main(options){
+	
+// }
+
+
+console.log('Getting schema for ' + options['identifier'] + ', which is of type ' + options['objectType'] + '...\n');
+
+verity.getSchema(options['identifier'],function(err, data){
 	if (err)
 		console.log(err);
 	else {
 		console.log(
 			"The Requested schema for " + identifier + ':\n' + 
 			JSON.stringify(data)
-			);
+		);
 	}
 });
+
+
+
+
+
+
+function validateArgs(){
+	var options = {
+		"identifier": process.argv[2],
+		"objectType": process.argv[3]
+	}
+	return options;
+}
 
 
 
@@ -27,3 +57,4 @@ process.on('SIGINT', function () {
   log('interrupt');
   process.exit(2);
 });
+
