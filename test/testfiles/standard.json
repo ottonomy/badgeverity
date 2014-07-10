@@ -1,0 +1,204 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "definitions": {
+        "ISODateTime": {
+            "description": "ISO 8601 date format string yyyy-MM-dd'T'HH:mm:ss.SSS with optional .SSS milliseconds",
+            "allOf": { "type": "string" },
+            "oneOf": [
+                { "pattern": "^\\d{4}-[01]\\d-[0-3]\\dT[0-2]\\d:[0-5]\\d((.|,)\\d{1,3})?(Z|[+-][0-2]\\d(:?[0-5]\\d)?)$" }
+            ]
+        },
+        "UNIXTimeStamp": {
+            "description": "10-digit UNIX timestamp, epoch time",
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9999999999
+        },
+        "DateTime": { "anyOf": [
+            { "$ref": "#/definitions/ISODateTime" },
+            { "$ref": "#/definitions/UNIXTimeStamp" }
+            ]
+        },
+        "ImageDataUrl": { 
+            "type": "string",
+            "pattern": "^data:(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
+        },
+        "BadgeImage": {
+            "oneOf": [
+                { "$ref": "#/definitions/ImageDataUrl" },
+                { "type": "string", "format": "uri" }
+            ]
+        },
+        "IdentityType": {
+            "type": "string",
+            "enum": ["email"]
+        },
+        "HashString": {
+            "allOf": [ { "type": "string" } ],
+            "oneOf": [ 
+                { 
+                    "title": "Open Badges SHA-1 Hash",
+                    "pattern": "^sha1$[a-fA-F0-9]{40}$"
+                },
+                { 
+                    "title": "Open Badges SHA-256 Hash",
+                    "pattern": "^sha1$[a-fA-F0-9]{64}$"
+                }
+            ]    
+        },
+        "IdentityObject": { 
+            "title": "Badge Identity Object",
+            "type": "object",
+            "properties": {
+                "identity": {
+                    "oneOf": [
+                        { "$ref": "#/definitions/HashString"},
+                        { "type": "string", "format": "email"}
+                    ]
+                },
+                "type": { "$ref": "#/definitions/IdentityType" },
+                "hashed": { "type": "boolean" },
+                "salt": { "type": "string" }
+            },
+            "required": ["identity","type","hashed"]
+        },
+        "VerificationObject": { 
+            "type": "object",
+            "properties": {
+                "type": { 
+                    "title": "VerificationType",
+                    "type": "string", 
+                    "enum": ["hosted", "signed"] 
+                },
+                "url": { "type": "string", "format": "uri" }
+            },
+            "required": ["type"]
+        },
+        "AlignmentObject": {
+            "description": "Each object in an alignment array is an object that describes a particular standard or standard element and provides an appropriate link",
+            "type": "object",
+            "properties": {
+                "name": { "type": "string" },
+                "url": { "type": "string", "format": "uri" },
+                "description": { "type": "string" }
+            },
+            "required": ["name", "url"]
+        },
+        "AlignmentArray": {
+            "description": "List of objects describing which educational standards this badge aligns to, if any, and linking to the appropriate standard.",
+            "type": "array",
+            "items": { "$ref": "#/definitions/AlignmentObject" }
+        },
+        "TagsArray": {
+            "description": "An array of strings. TagsArray is not a controlled vocabulary; it's a folksonomy",
+            "type": "array",
+            "items": { "type": "string" },
+            "uniqueness": true
+        },
+        "RevocationListObject": {
+            "title":"Badge Assertion Revocation List",
+            "description": "A revocation list is an object with keys of the unique IDs of the badges that have been revoked. Each key's value is a string describing the reason for the revocation. Only necessary for signed badges (will not be an effective method of revoking hosted badges)",
+            "type": "object",
+            "additionalProperties": { "type": "string" }
+        },
+        "IssuerOrganization": {
+            "id": "http://badgealliance.org/standard/1.1#/definitions/IssuerOrganization",
+            "title": "Issuer Organization",
+            "description": "An object defining an organization capable of issuing badges",
+            "type": "object",
+            "properties": {
+                "name": { "type": "string" },
+                "url": { "type": "string", "format": "uri" },
+                "description": { "type": "string" },
+                "image": { "$ref": "#/definitions/BadgeImage" },
+                "email": { "type": "string", "format": "email" },
+                "revocationList": { "type": "string", "format": "uri" }
+            },
+            "required": ["name","url"]
+        },
+        "BadgeClass": {
+            "id": "http://badgealliance.org/standard/1.1#/definitions/BadgeClass",
+            "title": "OBI Badge Class v1.1",
+            "description": "A JSON object describing a specific type of badge, which may then be issued to many recipients",
+            "type": "object",
+            "properties": {
+                "name": { "type": "string" },
+                "description": { "type": "string" },
+                "image": { "$ref": "#/definitions/BadgeImage" },
+                "criteria": { "type": "string", "format": "uri" },
+                "issuer": { 
+                    "oneOf": [
+                        { "allOf": [
+                            { "$ref": "#/definitions/IssuerOrganization" },
+                            { "$ref": "#/definitions/has_location" }
+                            ]
+                        },
+                        { "type": "string", "format": "uri" }
+                    ]
+                },
+                "alignment": { "$ref": "#/definitions/AlignmentArray" },
+                "tags": { "$ref": "#/definitions/TagsArray" }
+            },
+            "required": ["name", "description", "image", "criteria", "issuer"],
+            "additionalProperties": true
+        },
+        "Assertion": {
+            "id": "http://badgealliance.org/standard/1.1#/definitions/Assertion",
+            "title": "Badge Assertion",
+            "description": "The record of a singile recipient's instance of a specific type of badge",
+            "type": "object",
+            "properties":{
+                "uid": { "type": "string" },
+                "recipient": { "$ref": "#/definitions/IdentityObject" },
+                "badge": { "oneOf": [
+                    {
+                        "allOf": [ 
+                            { "$ref": "#/definitions/BadgeClass" },
+                            { "$ref": "#/definitions/has_location" }
+                        ]
+                    },
+                    { "type": "string", "format": "uri" }
+                    ]
+                },
+                "verify": { "$ref": "#/definitions/VerificationObject" },
+                "issuedOn": { "$ref": "#/definitions/DateTime" },
+                "evidence": { "type": "string", "format": "uri" },
+                "expires": { "$ref": "#/definitions/DateTime" }
+            },
+            "required": ["uid", "recipient", "badge", "verify", "issuedOn"],
+            "additionalProperties": true 
+        },
+        "has_location": {
+            "description": "An additional rule for when a badge object is embedded instead of linked, in which case it must have a _location property to contain the original URI",
+            "type": "object",
+            "properties": {
+                "_location": { "type": "string", "format": "uri" }
+            },
+            "required": ["_location"]
+        }
+    },
+    "id": "http://badgealliance.org/standard/1.1/#",
+    "title": "Badge Assertion",
+    "description": "The record of a singile recipient's instance of a specific type of badge",
+    "type": "object",
+    "properties":{
+        "uid": { "type": "string" },
+        "recipient": { "$ref": "#/definitions/IdentityObject" },
+        "badge": { "oneOf": [
+            {
+                "allOf": [ 
+                    { "$ref": "#/definitions/BadgeClass" },
+                    { "$ref": "#/definitions/has_location" }
+                ]
+            },
+            { "type": "string", "format": "uri" }
+            ]
+        },
+        "verify": { "$ref": "#/definitions/VerificationObject" },
+        "issuedOn": { "$ref": "#/definitions/DateTime" },
+        "evidence": { "type": "string", "format": "uri" },
+        "expires": { "$ref": "#/definitions/DateTime" }
+    },
+    "required": ["uid", "recipient", "badge", "verify", "issuedOn"],
+    "additionalProperties": true   
+}
