@@ -1,6 +1,6 @@
 ## Documentation for Badge Verity
 
-Badge Verity is a utility to perform several tasks related to validating (OBI Open Badges)[http://openbadges.org], particularly:
+Badge Verity is a utility to perform several tasks related to validating [OBI Open Badges](http://openbadges.org), particularly:
 * Testing whether a badgeClass is a valid instance of an OBI badgeClass, obeying the OBI standard, as defined in JSON-schema
 * Testing the properties of badgeClass instances to ensure they are well-formed against JSON-schemas specific to their type.
 * Allows the addition of additional rules for extension properties in the form of schemas in a datastore or file. (This feature is not yet implemented here or in the Open Badges Standard)
