@@ -14,7 +14,7 @@ This software will eventually be easily incorporated within other Node.js apps t
 ## Requests for Help
 I'd particularly like review of my JSON-schema definition of the Open Badge Assertion. It attempts to be elegantly structured, but ends up with some duplication. I'm not at all sure how good my JavaScript RegExps are especially!
 
-I will accept pull requests of new code or tests, especially if they show how my (standard.json draft schema)[https://github.com/ottonomy/badgeverity/blob/master/test/testfiles/standard.json] is failing on valid badges.
+I will accept pull requests of new code or tests, especially if they show how my [standard.json draft schema](https://github.com/ottonomy/badgeverity/blob/master/test/testfiles/standard.json) is failing on valid badges.
 
 ### License
 The MIT License (MIT)
