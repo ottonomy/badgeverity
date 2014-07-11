@@ -1,18 +1,20 @@
 const test = require('tap').test;
 const fs = require('fs');
 const validator = require('../lib/validateObject.js');
+const oven = require('openbadges-bakery');
 
 const ls = require('../lib/loadSchema.js');
 var monk = require('monk');
 var db = monk('localhost/badgeveritytest');
 
+var standard = fs.readFileSync("./testfiles/standard.json",'utf-8');
 
 var numTests = 0;
 
 function endTest(t){
 	t.end();
 	numTests += 1;
-	if (numTests === 3)
+	if (numTests === 4)
 		db.close();
 } 
 
@@ -120,8 +122,6 @@ test("Test a sample assertion object against the OBI standard combined schema", 
         issuedOn: 1293849872
     };
 
-    var standard = fs.readFileSync("./testfiles/standard.json",'utf-8');
-
     //validate results, which will return an array of errors.
     var validationResults = validator.validateBadgeObject(assertion,JSON.parse(standard));
     t.equal(validationResults.length, 0, "There shouldn't be any errors at all when validating against the OBI schema. Duh");
@@ -130,6 +130,23 @@ test("Test a sample assertion object against the OBI standard combined schema", 
 });
 
 
+
+test("Extract the assertion from a badge image to test against the assertion schema", function (t){
+    var badgeImage = fs.readFileSync("./testfiles/test.png");
+
+    oven.extract(badgeImage,function(err, assertion){
+        t.equal(err,null,"There should be no errors extracting badge metadata.");
+        if (!err){
+            assertionObject = JSON.parse(assertion);
+            validationResults = validator.validateBadgeObject(assertionObject,JSON.parse(standard));
+            // t.equal(assertionObject,{"string-cheese": true}, "uncomment to see what the badge object is");
+            t.equal(validationResults.length,0,"There should be no validation errors on the assertion in an image");
+            // t.equal(validationResults,[1],"let's look at the validation errors");
+        }
+        endTest(t);
+    });
+
+});
 
 
 

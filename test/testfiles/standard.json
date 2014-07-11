@@ -38,11 +38,11 @@
             "oneOf": [ 
                 { 
                     "title": "Open Badges SHA-1 Hash",
-                    "pattern": "^sha1$[a-fA-F0-9]{40}$"
+                    "pattern": "^sha1\\$[a-fA-F0-9]{40}$"
                 },
                 { 
                     "title": "Open Badges SHA-256 Hash",
-                    "pattern": "^sha1$[a-fA-F0-9]{64}$"
+                    "pattern": "^sha256\\$[a-fA-F0-9]{64}$"
                 }
             ]    
         },
